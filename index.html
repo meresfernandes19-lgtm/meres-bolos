@@ -1,16 +1,15 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dolice Bolos | Confeitaria Artesanal</title>
+    <title>Dolice Bolos | Confeitaria Artesanal Premium</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Lato & Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,28 +17,39 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Lenis (Smooth Scroll Premium) -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
-    <!-- Configuração de Cores Personalizadas -->
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Configuração do Tailwind -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         dolice: {
-                            rose: '#E8D5D5',
-                            light: '#FAF7F5',
-                            accent: '#C58F8F',
-                            dark: '#5D4037', // Chocolate
-                            gold: '#B08D55',
-                            text: '#4A4A4A'
+                            rose: '#F3E5E5', 
+                            light: '#FCFAFA', 
+                            accent: '#D49A9A', 
+                            dark: '#4A3B37', 
+                            gold: '#C5A880',
+                            text: '#3A3A3A'
                         }
                     },
                     fontFamily: {
                         sans: ['Lato', 'sans-serif'],
                         serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 20px 40px -15px rgba(74, 59, 55, 0.1)',
+                        'premium-hover': '0 30px 60px -20px rgba(74, 59, 55, 0.2)',
+                        'glass': 'inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 8px 32px 0 rgba(0, 0, 0, 0.05)',
                     }
                 }
             }
@@ -47,289 +57,628 @@
     </script>
 
     <style>
-        body {
-            background-color: #FAF7F5;
-            color: #4A4A4A;
-        }
-        
-        .hero-bg {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+        /* Variáveis & Base */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.5);
         }
 
-        /* Estilos de Seleção */
+        body {
+            background-color: #FCFAFA;
+            color: #3A3A3A;
+            overflow-x: hidden;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #FCFAFA; }
+        ::-webkit-scrollbar-thumb { background: #D49A9A; border-radius: 10px; }
+
+        /* Utilitários Premium */
+        .glass-premium {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+
+        .hero-wrap {
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(74, 59, 55, 0.4), rgba(30, 20, 18, 0.6)),
+                        url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+            height: 125%; 
+            position: absolute;
+            top: -10%; left: 0; right: 0;
+            z-index: -1;
+            transform-origin: center;
+        }
+
+        /* Cards */
         .selectable-card {
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-premium);
         }
-        
+
+        .selectable-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            transition: all 0.85s ease;
+            z-index: 1;
+        }
+
+        .selectable-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-premium-hover);
+            border-color: rgba(212, 154, 154, 0.4);
+        }
+
+        .selectable-card:hover::before {
+            left: 200%;
+        }
+
         .selectable-card.selected {
-            border-color: #C58F8F;
-            background-color: #FFF0F0;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #D49A9A;
+            background: rgba(253, 245, 245, 0.9);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 0 20px rgba(212, 154, 154, 0.2), var(--shadow-premium);
+        }
+
+        .selectable-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 24px; height: 24px;
+            background: #D49A9A;
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold;
+            animation: pop-check 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 2;
         }
 
         .selectable-item {
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255,255,255,0.9);
+            position: relative;
+            overflow: hidden;
         }
-        .selectable-item.selected {
-            background-color: #E8D5D5;
-            border-left: 4px solid #5D4037;
-            font-weight: bold;
+        
+        .selectable-item:hover {
+            background: #ffffff;
+            transform: translateX(6px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.03);
         }
 
-        /* Carrinho Lateral */
-        #cart-sidebar {
-            transition: transform 0.3s ease-in-out;
+        .selectable-item.selected {
+            background: #ffffff;
+            border-left: 4px solid #D49A9A;
+            box-shadow: 0 4px 12px rgba(212, 154, 154, 0.1);
         }
-        #cart-sidebar.open {
-            transform: translateX(0);
+
+        /* Animações e Auxiliares */
+        @keyframes pop-check {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        .btn-breathe {
+            animation: breathe 3s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0% { box-shadow: 0 0 0 0 rgba(212, 154, 154, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 154, 154, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 154, 154, 0); }
+        }
+
+        .badge-pop {
+            animation: badge-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes badge-pop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .ripple-effect {
+            position: relative;
+            overflow: hidden;
+            transform: translate3d(0,0,0);
+        }
+        .ripple-effect .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            transform: scale(0);
+            animation: ripple-anim 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+        @keyframes ripple-anim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        #cart-sidebar {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
         }
         #cart-sidebar.closed {
             transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        /* Ícone Pix */
-        .icon-pix {
-            width: 24px;
-            height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235D4037' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z'/%3E%3Cpath d='m7 7 10 10'/%3E%3Cpath d='m17 7-10 10'/%3E%3C/svg%3E");
-            background-size: cover;
+        #action-bar {
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #action-bar.visible-bar {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #toast {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-20px) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #toast.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
         }
     </style>
 </head>
-<body class="antialiased overflow-x-hidden pb-20">
+<body class="antialiased selection:bg-dolice-accent selection:text-white">
 
-    <!-- Navbar -->
-    <nav class="fixed w-full z-40 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm" id="navbar">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[70] glass-premium px-6 py-4 rounded-full shadow-2xl flex items-center gap-4 text-dolice-dark border border-white">
+        <div class="w-8 h-8 bg-dolice-accent/20 rounded-full flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-dolice-accent"></i>
+        </div>
+        <span class="font-medium text-sm tracking-wide">Produto adicionado ao orçamento</span>
+    </div>
+
+    <!-- Navbar Glassmorphism -->
+    <nav class="fixed w-full z-50 transition-all duration-500 py-4" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="#" class="font-serif text-3xl font-bold text-dolice-dark tracking-wide">
-                        Dolice <span class="text-dolice-accent">Bolos</span>
-                    </a>
-                </div>
+            <div class="glass-premium rounded-full px-6 py-3 flex justify-between items-center shadow-sm">
+                <a href="#" class="font-serif text-2xl font-bold text-dolice-dark tracking-wide flex items-center gap-2">
+                    <i data-lucide="cake-slice" class="w-6 h-6 text-dolice-accent"></i>
+                    Dolice <span class="text-dolice-accent italic">Bolos</span>
+                </a>
                 
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#tamanhos" class="text-dolice-text hover:text-dolice-accent transition font-medium">Montar Bolo</a>
-                    <a href="#info" class="text-dolice-text hover:text-dolice-accent transition font-medium">Informações</a>
-                    <button onclick="toggleCart()" class="relative bg-dolice-dark text-white p-2 rounded-full hover:bg-dolice-accent transition">
-                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
-                        <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full hidden">0</span>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#tamanhos" class="text-sm font-medium text-dolice-text/70 hover:text-dolice-accent transition-colors">Montar Bolo</a>
+                    <a href="#info" class="text-sm font-medium text-dolice-text/70 hover:text-dolice-accent transition-colors">Informações</a>
+                    <button onclick="toggleCart()" class="relative group bg-white/50 text-dolice-dark p-3 rounded-full hover:bg-white transition-all shadow-sm">
+                        <i data-lucide="shopping-bag" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-dolice-accent text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full hidden font-bold border-2 border-white shadow-sm">0</span>
                     </button>
                 </div>
 
                 <div class="md:hidden flex items-center gap-4">
-                    <button onclick="toggleCart()" class="relative text-dolice-dark">
-                        <i data-lucide="shopping-bag" class="w-7 h-7"></i>
-                        <span id="cart-count-badge-mobile" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full hidden">0</span>
+                    <button onclick="toggleCart()" class="relative text-dolice-dark bg-white/50 p-2 rounded-full shadow-sm">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        <span id="cart-count-badge-mobile" class="absolute -top-1 -right-1 bg-dolice-accent text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full hidden border-2 border-white">0</span>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Seção 1: Hero -->
-    <header class="relative h-[80vh] flex items-center justify-center hero-bg text-center px-4">
-        <div class="relative z-10 max-w-4xl mx-auto space-y-6" data-aos="fade-up">
-            <h1 class="font-serif text-5xl md:text-7xl text-white font-bold leading-tight drop-shadow-lg">
-                Seu bolo, do seu jeito.
+    <!-- HERO Section Parallax -->
+    <header class="hero-wrap h-[90vh] flex items-center justify-center text-center px-4 overflow-hidden relative">
+        <div class="hero-bg" id="parallax-bg"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-dolice-dark/30 via-transparent to-dolice-light z-0"></div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto space-y-8 mt-12" id="hero-content">
+            <span class="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-xs font-semibold tracking-[0.2em] uppercase mb-4">
+                Confeitaria Artesanal
+            </span>
+            <h1 class="font-serif text-6xl md:text-8xl text-white font-bold leading-[1.1] drop-shadow-2xl">
+                A arte de criar <br class="hidden sm:block"/><span class="italic text-dolice-rose font-light">momentos doces.</span>
             </h1>
-            <p class="text-white/90 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto">
-                Monte seu pedido selecionando tamanho, massa e recheios abaixo.
+            <p class="text-white/90 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
+                Personalize seu bolo escolhendo cada detalhe. Tamanho, massa e os recheios perfeitos para a sua celebração.
             </p>
             <div class="pt-8">
-                <a href="#tamanhos" class="inline-block bg-white text-dolice-dark px-10 py-4 rounded-full font-serif text-lg font-semibold hover:bg-dolice-rose hover:text-white transition-all shadow-xl">
-                    Começar Pedido
+                <a href="#tamanhos" onclick="scrollToSection('#tamanhos', event)" class="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-dolice-dark px-10 py-4 rounded-full font-sans text-sm tracking-wider font-bold hover:bg-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:-translate-y-1 ripple-effect group">
+                    INICIAR PEDIDO
+                    <i data-lucide="arrow-down" class="w-4 h-4 group-hover:translate-y-1 transition-transform"></i>
                 </a>
             </div>
         </div>
     </header>
 
+    <!-- 
+      AJUSTE DE ESPAÇAMENTO:
+      Antes estava py-32 em ambos (passo 1 e 2). 
+      Agora o Tamanhos (Passo 1) termina com pb-12/md:pb-16
+      e Sabores (Passo 2 e 3) começa com pt-12/md:pt-16. 
+      Isso faz com que fiquem colados na mesma distância do grid interno (gap-16/24).
+    -->
+
     <!-- STEP 1: TAMANHOS -->
-    <section id="tamanhos" class="py-20 bg-dolice-light relative">
+    <section id="tamanhos" class="pt-32 pb-8 md:pt-40 md:pb-12 relative z-10">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Passo 1</span>
-                <h2 class="font-serif text-4xl text-dolice-dark">Escolha o Tamanho</h2>
-                <p class="text-gray-500 mt-2">Clique no tamanho ideal para sua festa</p>
+            <div class="text-center mb-16 md:mb-20 section-header opacity-0">
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <span class="h-px w-8 bg-dolice-accent/50"></span>
+                    <span class="text-xs font-bold text-dolice-accent uppercase tracking-[0.2em]">Passo 01</span>
+                    <span class="h-px w-8 bg-dolice-accent/50"></span>
+                </div>
+                <h2 class="font-serif text-4xl md:text-5xl text-dolice-dark">O Tamanho Ideal</h2>
+                <p class="text-gray-500 mt-4 font-light text-lg">Selecione o rendimento perfeito para sua comemoração.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                <div class="selectable-card bg-white p-6 rounded-2xl shadow-sm text-center" onclick="selectSize('15cm', '12 a 15 pessoas', this)">
-                    <div class="w-16 h-16 bg-dolice-rose/30 rounded-full mx-auto mb-3 flex items-center justify-center text-dolice-dark"><i data-lucide="cake-slice"></i></div>
-                    <h3 class="font-serif text-xl text-dolice-dark">15cm</h3>
-                    <p class="text-dolice-accent font-bold text-sm">12-15 pessoas</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8" id="size-grid">
+                <div class="selectable-card p-8 rounded-3xl text-center group opacity-0" onclick="selectSize('15cm', '12 a 15 pessoas', this)" data-size="15cm">
+                    <div class="w-20 h-20 bg-gradient-to-br from-dolice-rose to-white rounded-full mx-auto mb-6 flex items-center justify-center text-dolice-accent shadow-inner transition-transform group-hover:scale-110">
+                        <i data-lucide="cake-slice" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-dolice-dark mb-1">15cm</h3>
+                    <p class="text-gray-500 text-sm tracking-wide">12 a 15 pessoas</p>
+                </div>
+                
+                <div class="selectable-card p-8 rounded-3xl text-center group opacity-0" onclick="selectSize('20cm', '20 a 25 pessoas', this)" data-size="20cm">
+                    <div class="w-20 h-20 bg-gradient-to-br from-dolice-rose to-white rounded-full mx-auto mb-6 flex items-center justify-center text-dolice-accent shadow-inner transition-transform group-hover:scale-110">
+                        <i data-lucide="cake" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-dolice-dark mb-1">20cm</h3>
+                    <p class="text-gray-500 text-sm tracking-wide">20 a 25 pessoas</p>
                 </div>
 
-                <div class="selectable-card bg-white p-6 rounded-2xl shadow-sm text-center" onclick="selectSize('20cm', '20 a 25 pessoas', this)">
-                    <div class="w-16 h-16 bg-dolice-rose/30 rounded-full mx-auto mb-3 flex items-center justify-center text-dolice-dark"><i data-lucide="cake"></i></div>
-                    <h3 class="font-serif text-xl text-dolice-dark">20cm</h3>
-                    <p class="text-dolice-accent font-bold text-sm">20-25 pessoas</p>
+                <div class="selectable-card p-8 rounded-3xl text-center group border-2 border-dolice-rose/50 relative overflow-visible opacity-0" onclick="selectSize('25cm', '35 a 40 pessoas', this)" data-size="25cm">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-dolice-dark text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-md whitespace-nowrap z-10">
+                        Mais Pedido
+                    </div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-dolice-accent/20 to-white rounded-full mx-auto mb-6 flex items-center justify-center text-dolice-accent shadow-inner transition-transform group-hover:scale-110">
+                        <i data-lucide="cake" class="w-9 h-9"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-dolice-dark mb-1">25cm</h3>
+                    <p class="text-gray-500 text-sm tracking-wide">35 a 40 pessoas</p>
                 </div>
 
-                <div class="selectable-card bg-white p-6 rounded-2xl shadow-sm text-center border-2 border-dolice-rose/50" onclick="selectSize('25cm', '35 a 40 pessoas', this)">
-                    <div class="w-16 h-16 bg-dolice-rose/50 rounded-full mx-auto mb-3 flex items-center justify-center text-dolice-dark"><i data-lucide="cake"></i></div>
-                    <h3 class="font-serif text-xl text-dolice-dark">25cm</h3>
-                    <p class="text-dolice-accent font-bold text-sm">35-40 pessoas</p>
+                <div class="selectable-card p-8 rounded-3xl text-center group opacity-0" onclick="selectSize('30cm', '55 a 60 pessoas', this)" data-size="30cm">
+                    <div class="w-20 h-20 bg-gradient-to-br from-dolice-rose to-white rounded-full mx-auto mb-6 flex items-center justify-center text-dolice-accent shadow-inner transition-transform group-hover:scale-110">
+                        <i data-lucide="layers" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-dolice-dark mb-1">30cm</h3>
+                    <p class="text-gray-500 text-sm tracking-wide">55 a 60 pessoas</p>
                 </div>
 
-                <div class="selectable-card bg-white p-6 rounded-2xl shadow-sm text-center" onclick="selectSize('30cm', '55 a 60 pessoas', this)">
-                    <div class="w-16 h-16 bg-dolice-rose/30 rounded-full mx-auto mb-3 flex items-center justify-center text-dolice-dark"><i data-lucide="layers"></i></div>
-                    <h3 class="font-serif text-xl text-dolice-dark">30cm</h3>
-                    <p class="text-dolice-accent font-bold text-sm">55-60 pessoas</p>
-                </div>
-
-                <div class="selectable-card bg-white p-6 rounded-2xl shadow-sm text-center" onclick="selectSize('35cm', '75 a 80 pessoas', this)">
-                    <div class="w-16 h-16 bg-dolice-rose/30 rounded-full mx-auto mb-3 flex items-center justify-center text-dolice-dark"><i data-lucide="party-popper"></i></div>
-                    <h3 class="font-serif text-xl text-dolice-dark">35cm</h3>
-                    <p class="text-dolice-accent font-bold text-sm">75-80 pessoas</p>
+                <div class="selectable-card p-8 rounded-3xl text-center group opacity-0" onclick="selectSize('35cm', '75 a 80 pessoas', this)" data-size="35cm">
+                    <div class="w-20 h-20 bg-gradient-to-br from-dolice-rose to-white rounded-full mx-auto mb-6 flex items-center justify-center text-dolice-accent shadow-inner transition-transform group-hover:scale-110">
+                        <i data-lucide="party-popper" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-dolice-dark mb-1">35cm</h3>
+                    <p class="text-gray-500 text-sm tracking-wide">75 a 80 pessoas</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- STEP 2 & 3: SABORES -->
-    <section id="sabores" class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <!-- AJUSTE DE ESPAÇAMENTO APLICADO AQUI -->
+    <section id="sabores" class="pt-8 pb-32 md:pt-12 md:pb-40 relative">
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-dolice-rose/40 to-transparent z-0 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-1/3 h-1/2 bg-gradient-to-r from-dolice-rose/30 to-transparent z-0 blur-3xl"></div>
+
+        <div class="max-w-6xl mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24">
                 
                 <!-- Massas -->
-                <div id="massas-container">
-                    <div class="mb-6 border-b border-gray-100 pb-2">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Passo 2</span>
-                        <h3 class="font-serif text-3xl text-dolice-dark">Escolha a Massa</h3>
+                <div id="massas-container" class="slide-up-element opacity-0">
+                    <div class="mb-10">
+                        <span class="text-xs font-bold text-dolice-accent uppercase tracking-[0.2em]">Passo 02</span>
+                        <h3 class="font-serif text-4xl text-dolice-dark mt-2">A Base Perfeita</h3>
+                        <p class="text-gray-500 mt-2 font-light">Selecione o tipo de massa.</p>
                     </div>
-                    <div class="space-y-3">
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex justify-between items-center" onclick="selectBatter('Branca', this)">
-                            <span>Massa Branca</span>
-                            <i data-lucide="wheat" class="w-5 h-5 text-gray-400"></i>
+                    
+                    <div class="space-y-4">
+                        <div class="selectable-item p-5 rounded-2xl flex justify-between items-center group" onclick="selectBatter('Branca', this)">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full border-2 border-gray-300 group-[.selected]:border-dolice-accent group-[.selected]:bg-dolice-accent transition-colors"></div>
+                                <span class="font-medium text-lg text-dolice-dark group-[.selected]:font-bold">Massa Branca</span>
+                            </div>
+                            <i data-lucide="wheat" class="w-5 h-5 text-gray-400 group-hover:text-dolice-accent transition-colors"></i>
                         </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex justify-between items-center" onclick="selectBatter('Chocolate 50%', this)">
-                            <span>Chocolate 50%</span>
-                            <i data-lucide="cookie" class="w-5 h-5 text-dolice-dark"></i>
+                        
+                        <div class="selectable-item p-5 rounded-2xl flex justify-between items-center group" onclick="selectBatter('Chocolate 50%', this)">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full border-2 border-gray-300 group-[.selected]:border-dolice-accent group-[.selected]:bg-dolice-accent transition-colors"></div>
+                                <span class="font-medium text-lg text-dolice-dark group-[.selected]:font-bold">Chocolate 50%</span>
+                            </div>
+                            <i data-lucide="cookie" class="w-5 h-5 text-[#5D4037] group-hover:scale-110 transition-transform"></i>
                         </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex justify-between items-center" onclick="selectBatter('Red Velvet', this)">
-                            <span>Red Velvet</span>
-                            <i data-lucide="heart" class="w-5 h-5 text-red-400"></i>
+
+                        <div class="selectable-item p-5 rounded-2xl flex justify-between items-center group" onclick="selectBatter('Red Velvet', this)">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full border-2 border-gray-300 group-[.selected]:border-dolice-accent group-[.selected]:bg-dolice-accent transition-colors"></div>
+                                <span class="font-medium text-lg text-dolice-dark group-[.selected]:font-bold">Red Velvet</span>
+                            </div>
+                            <i data-lucide="heart" class="w-5 h-5 text-red-400 group-hover:scale-110 transition-transform"></i>
                         </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex justify-between items-center" onclick="selectBatter('Baunilha', this)">
-                            <span>Baunilha</span>
-                            <i data-lucide="flower-2" class="w-5 h-5 text-yellow-500"></i>
+
+                        <div class="selectable-item p-5 rounded-2xl flex justify-between items-center group" onclick="selectBatter('Baunilha', this)">
+                            <div class="flex items-center gap-4">
+                                <div class="w-3 h-3 rounded-full border-2 border-gray-300 group-[.selected]:border-dolice-accent group-[.selected]:bg-dolice-accent transition-colors"></div>
+                                <span class="font-medium text-lg text-dolice-dark group-[.selected]:font-bold">Baunilha</span>
+                            </div>
+                            <i data-lucide="flower-2" class="w-5 h-5 text-yellow-500 group-hover:scale-110 transition-transform"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recheios -->
-                <div id="recheios-container">
-                    <div class="mb-6 border-b border-gray-100 pb-2">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Passo 3</span>
-                        <h3 class="font-serif text-3xl text-dolice-dark">Escolha o Recheio</h3>
+                <div id="recheios-container" class="slide-up-element opacity-0">
+                    <div class="mb-10 flex flex-col items-start">
+                        <span class="text-xs font-bold text-dolice-accent uppercase tracking-[0.2em]">Passo 03</span>
+                        <h3 class="font-serif text-4xl text-dolice-dark mt-2">O Recheio</h3>
+                        <span class="bg-white border border-gray-100 text-gray-500 text-xs px-3 py-1 rounded-full mt-3 shadow-sm">
+                            Selecione até 2 sabores
+                        </span>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Prestígio', this)">
-                            <div class="w-3 h-3 rounded-full bg-dolice-dark"></div> Prestígio
-                        </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Brigadeiro', this)">
-                            <div class="w-3 h-3 rounded-full bg-dolice-dark"></div> Brigadeiro
-                        </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Morango', this)">
-                            <div class="w-3 h-3 rounded-full bg-red-400"></div> Morango
-                        </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Mousse', this)">
-                            <div class="w-3 h-3 rounded-full bg-yellow-700"></div> Mousse
-                        </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Leite Ninho', this)">
-                            <div class="w-3 h-3 rounded-full bg-yellow-200"></div> Leite Ninho
-                        </div>
-                        <div class="selectable-item p-4 rounded-lg bg-gray-50 flex items-center gap-3" onclick="toggleFilling('Brigadeiro Branco', this)">
-                            <div class="w-3 h-3 rounded-full bg-gray-200"></div> Brig. Branco
-                        </div>
-                    </div>
-                    <p id="filling-warning" class="text-red-400 text-sm mt-2 hidden animate-pulse">Máximo de 2 recheios selecionados.</p>
-                </div>
 
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Prestígio', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#4A332D]"></span> 
+                            <span class="font-medium text-dolice-dark">Prestígio</span>
+                        </div>
+                        
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Brigadeiro', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#2A1C18]"></span> 
+                            <span class="font-medium text-dolice-dark">Brigadeiro</span>
+                        </div>
+
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Morango', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> 
+                            <span class="font-medium text-dolice-dark">Morango</span>
+                        </div>
+
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Mousse', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#8D6E63]"></span> 
+                            <span class="font-medium text-dolice-dark">Mousse</span>
+                        </div>
+
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Leite Ninho', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-100 border border-gray-200"></span> 
+                            <span class="font-medium text-dolice-dark">Leite Ninho</span>
+                        </div>
+
+                        <div class="selectable-item p-5 rounded-2xl flex items-center gap-3 group" onclick="toggleFilling('Brigadeiro Branco', this)">
+                            <div class="w-5 h-5 rounded border border-gray-300 flex items-center justify-center group-[.selected]:bg-dolice-dark group-[.selected]:border-dolice-dark transition-colors">
+                                <i data-lucide="check" class="w-3 h-3 text-white opacity-0 group-[.selected]:opacity-100"></i>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-gray-100 border border-gray-200"></span> 
+                            <span class="font-medium text-dolice-dark whitespace-nowrap">Brig. Branco</span>
+                        </div>
+                    </div>
+                    
+                    <div id="filling-warning" class="mt-4 p-3 bg-red-50 text-red-500 rounded-xl text-sm hidden flex items-center gap-2 border border-red-100">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        Você já selecionou o máximo de 2 recheios.
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Barra de Ação Flutuante -->
-    <div id="action-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-4 shadow-2xl transform translate-y-full transition-transform duration-300 z-30 flex justify-between items-center md:justify-center md:gap-8">
-        <div class="text-sm md:text-base">
-            <span class="block text-gray-500 text-xs uppercase">Resumo da seleção:</span>
-            <span id="selection-summary" class="font-serif text-dolice-dark font-bold">Selecione um tamanho...</span>
-        </div>
-        <button onclick="addToCart()" class="bg-dolice-dark text-white px-6 py-3 rounded-full font-bold hover:bg-dolice-accent transition shadow-lg flex items-center gap-2">
-            Adicionar ao Orçamento <i data-lucide="plus-circle" class="w-5 h-5"></i>
-        </button>
-    </div>
+    <!-- INFO Section Premium -->
+    <section id="info" class="py-32 bg-dolice-rose/20 relative z-10 border-t border-white/50">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <h3 class="font-serif text-4xl mb-16 text-dolice-dark section-header opacity-0">Informações Importantes</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="glass-premium p-10 rounded-3xl transition-all duration-500 hover:-translate-y-2 hover:shadow-premium-hover group slide-up-element opacity-0">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="map-pin" class="text-dolice-accent w-6 h-6"></i>
+                    </div>
+                    <p class="font-serif text-2xl text-dolice-dark mb-3">Retirada</p>
+                    <p class="text-gray-500 leading-relaxed font-light">Os pedidos devem ser retirados em nosso ateliê no horário combinado. Não realizamos entregas.</p>
+                </div>
 
-    <!-- Carrinho Lateral -->
-    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full closed flex flex-col h-full">
-        <div class="p-6 bg-dolice-dark text-white flex justify-between items-center">
-            <h2 class="font-serif text-2xl flex items-center gap-2"><i data-lucide="shopping-bag"></i> Seu Pedido</h2>
-            <button onclick="toggleCart()" class="hover:text-dolice-accent transition"><i data-lucide="x" class="w-8 h-8"></i></button>
-        </div>
-        
-        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-            <div id="empty-cart-msg" class="text-center text-gray-400 mt-10">
-                <i data-lucide="cake" class="w-16 h-16 mx-auto mb-4 opacity-30"></i>
-                <p>Seu carrinho está vazio.</p>
+                <div class="glass-premium p-10 rounded-3xl transition-all duration-500 hover:-translate-y-2 hover:shadow-premium-hover group slide-up-element opacity-0">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="wallet" class="text-dolice-accent w-6 h-6"></i>
+                    </div>
+                    <p class="font-serif text-2xl text-dolice-dark mb-3">Confirmação</p>
+                    <p class="text-gray-500 leading-relaxed font-light">A encomenda é confirmada apenas mediante o pagamento de 50% de sinal via PIX.</p>
+                </div>
+
+                <div class="glass-premium p-10 rounded-3xl transition-all duration-500 hover:-translate-y-2 hover:shadow-premium-hover group slide-up-element opacity-0">
+                    <div class="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="credit-card" class="text-dolice-accent w-6 h-6"></i>
+                    </div>
+                    <p class="font-serif text-2xl text-dolice-dark mb-3">Pagamento</p>
+                    <p class="text-gray-500 leading-relaxed font-light">Aceitamos cartões de crédito e débito no momento da retirada (sujeito às taxas da maquineta).</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="p-6 bg-white border-t border-gray-200">
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-1">Seu Nome:</label>
-                <input type="text" id="customer-name" placeholder="Digite seu nome" class="w-full border border-gray-300 rounded-lg p-3 focus:border-dolice-accent focus:outline-none">
+    <!-- Footer -->
+    <footer class="bg-dolice-dark text-white/60 py-12 text-center text-sm font-light relative z-10 pb-32 md:pb-12">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col items-center gap-4">
+            <div class="flex items-center gap-2 text-white/90">
+                <i data-lucide="cake-slice" class="w-5 h-5 text-dolice-accent"></i>
+                <span class="font-serif text-xl font-bold tracking-wide">Dolice <span class="text-dolice-accent italic">Bolos</span></span>
             </div>
-            <button onclick="sendToWhatsApp()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
-                <i data-lucide="message-circle"></i> Enviar Pedido no WhatsApp
+            <p>© 2026 Dolice Bolos. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- BARRA DE AÇÃO FLUTUANTE PREMIUM -->
+    <div id="action-bar" class="fixed bottom-0 left-0 w-full p-4 md:p-6 z-40">
+        <div class="max-w-4xl mx-auto glass-premium rounded-2xl md:rounded-full shadow-2xl p-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 border border-white/60">
+            <div class="text-center md:text-left">
+                <span class="block text-dolice-accent text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Sua Seleção</span>
+                <span id="selection-summary" class="font-serif text-dolice-dark text-lg md:text-xl font-medium">Monte seu bolo acima</span>
+            </div>
+            <button onclick="addToCart()" class="w-full md:w-auto ripple-effect bg-dolice-dark text-white px-8 py-3.5 rounded-full font-bold hover:bg-[#3A2B27] transition-all shadow-xl flex items-center justify-center gap-3 active:scale-[0.98]">
+                Adicionar ao Pedido <i data-lucide="arrow-right" class="w-5 h-5"></i>
             </button>
         </div>
     </div>
 
-    <div id="overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm"></div>
-
-    <!-- Info Section -->
-    <section id="info" class="py-16 bg-dolice-rose/20">
-        <div class="max-w-5xl mx-auto px-4 text-center">
-            <h3 class="font-serif text-3xl mb-8 text-dolice-dark">Informações Importantes</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <i data-lucide="map-pin-off" class="text-dolice-accent mb-2"></i>
-                    <p class="font-bold">Retirada</p>
-                    <p class="text-sm text-gray-600">Não realizamos entregas. Retirada no local.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <i data-lucide="wallet" class="text-dolice-accent mb-2"></i>
-                    <p class="font-bold">Pagamento</p>
-                    <p class="text-sm text-gray-600">50% de sinal para confirmar encomenda.</p>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm">
-                    <i data-lucide="credit-card" class="text-dolice-accent mb-2"></i>
-                    <p class="font-bold">Cartão</p>
-                    <p class="text-sm text-gray-600">Aceitamos crédito com juros da maquininha.</p>
-                </div>
+    <!-- CARRINHO LATERAL PREMIUM (DRAWER) -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[480px] bg-white/95 backdrop-blur-2xl shadow-[-20px_0_40px_rgba(0,0,0,0.1)] z-[60] closed flex flex-col h-full border-l border-white">
+        <div class="p-8 flex justify-between items-center border-b border-gray-100">
+            <div>
+                <h2 class="font-serif text-3xl text-dolice-dark flex items-center gap-3">
+                    <i data-lucide="shopping-bag" class="text-dolice-accent w-7 h-7"></i> 
+                    Seu Pedido
+                </h2>
+                <p class="text-sm text-gray-400 mt-1">Revise seus itens antes de enviar.</p>
+            </div>
+            <button onclick="toggleCart()" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-dolice-dark transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-4 bg-gray-50/50">
+            <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-gray-400 opacity-50">
+                <i data-lucide="shopping-bag" class="w-16 h-16 mb-4 stroke-1"></i>
+                <p class="font-serif text-xl">Seu carrinho está vazio</p>
+                <button onclick="toggleCart()" class="mt-4 text-sm text-dolice-accent underline hover:text-dolice-dark">Voltar para o cardápio</button>
             </div>
         </div>
-    </section>
+        
+        <div class="p-8 bg-white border-t border-gray-100 shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
+            <div class="mb-5 relative">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 pl-1">Seu Nome</label>
+                <div class="relative">
+                    <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300"></i>
+                    <input type="text" id="customer-name" placeholder="Como devemos lhe chamar?" class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-4 pl-12 pr-4 focus:border-dolice-accent focus:bg-white focus:outline-none transition-all focus:ring-4 focus:ring-dolice-rose">
+                </div>
+            </div>
+            <button onclick="sendToWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#1EBE5C] text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] group">
+                <i data-lucide="message-circle" class="w-6 h-6 group-hover:scale-110 transition-transform"></i> 
+                Enviar via WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay com Blur -->
+    <div id="overlay" onclick="toggleCart()" class="fixed inset-0 bg-dolice-dark/20 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-500"></div>
 
     <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // Inicializa Lenis (Smooth Scroll Premium) - Tempo e curva ajustados para maior fluidez
+        const lenis = new Lenis({
+            duration: 1.5, // Mais tempo = mais sedoso
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000) });
+        gsap.ticker.lagSmoothing(0);
+
         let currentSelection = { size: null, sizeDetails: null, batter: null, fillings: [] };
         let cart = [];
 
+        // Scroll global helper
+        function scrollToSection(targetId, e) {
+            if(e) e.preventDefault();
+            lenis.scrollTo(targetId, { offset: -80, duration: 1.5 }); 
+        }
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const tlHero = gsap.timeline({ defaults: { ease: 'power4.out' } });
+            tlHero.from('.hero-wrap span', { y: 20, opacity: 0, duration: 1, delay: 0.2 })
+                  .from('.hero-wrap h1', { y: 40, opacity: 0, duration: 1.2 }, "-=0.8")
+                  .from('.hero-wrap p', { y: 30, opacity: 0, duration: 1 }, "-=0.9")
+                  .from('.hero-wrap a', { y: 20, opacity: 0, scale: 0.95, duration: 0.8 }, "-=0.8");
+
+            // Parallax super sedoso usando scrub: 1.5 (cria um "lag" suave no scroll)
+            gsap.to('#parallax-bg', {
+                yPercent: 40, 
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".hero-wrap",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1.5
+                }
+            });
+
+            // Animação dos Cards - Mais duradoura
+            gsap.fromTo('#size-grid .selectable-card', 
+                { y: 50, opacity: 0 },
+                {
+                    scrollTrigger: { trigger: '#tamanhos', start: 'top 85%' },
+                    y: 0, opacity: 1, duration: 1, stagger: 0.12, ease: 'back.out(1.2)'
+                }
+            );
+
+            // Outros Reveals com subida mais elegante
+            const slideUpElements = gsap.utils.toArray('.slide-up-element, .section-header');
+            slideUpElements.forEach(el => {
+                gsap.fromTo(el, 
+                    { y: 40, opacity: 0 },
+                    {
+                        scrollTrigger: { trigger: el, start: 'top 85%' },
+                        y: 0, opacity: 1, duration: 1.2, ease: 'power3.out'
+                    }
+                );
+            });
+            
+            ScrollTrigger.refresh();
+        });
+
+        // Funções Lógicas
         function selectSize(size, details, element) {
             currentSelection.size = size;
             currentSelection.sizeDetails = details;
             document.querySelectorAll('#tamanhos .selectable-card').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             checkSelectionComplete();
+            
+            // Auto-scroll sedoso para as massas
+            setTimeout(() => { 
+                lenis.scrollTo('#massas-container', { offset: -140, duration: 1.5, easing: (t) => 1 - Math.pow(1 - t, 4) }); 
+            }, 400);
         }
 
         function selectBatter(batter, element) {
@@ -337,20 +686,30 @@
             document.querySelectorAll('#massas-container .selectable-item').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             checkSelectionComplete();
+            
+            // Auto-scroll sedoso para recheios
+            setTimeout(() => { 
+                lenis.scrollTo('#recheios-container', { offset: -140, duration: 1.5, easing: (t) => 1 - Math.pow(1 - t, 4) }); 
+            }, 400);
         }
 
         function toggleFilling(filling, element) {
             const index = currentSelection.fillings.indexOf(filling);
+            const warningEl = document.getElementById('filling-warning');
+            
             if (index > -1) {
                 currentSelection.fillings.splice(index, 1);
                 element.classList.remove('selected');
+                warningEl.classList.add('hidden');
             } else {
                 if (currentSelection.fillings.length < 2) {
                     currentSelection.fillings.push(filling);
                     element.classList.add('selected');
+                    gsap.fromTo(element, { scale: 0.95 }, { scale: 1, duration: 0.5, ease: "back.out(2)" });
                 } else {
-                    document.getElementById('filling-warning').classList.remove('hidden');
-                    setTimeout(() => document.getElementById('filling-warning').classList.add('hidden'), 2000);
+                    warningEl.classList.remove('hidden');
+                    gsap.fromTo(warningEl, { x: -10 }, { x: 0, duration: 0.4, ease: "elastic.out(1, 0.3)" });
+                    setTimeout(() => warningEl.classList.add('hidden'), 3000);
                 }
             }
             checkSelectionComplete();
@@ -359,87 +718,190 @@
         function checkSelectionComplete() {
             const actionBar = document.getElementById('action-bar');
             const summary = document.getElementById('selection-summary');
-            if (currentSelection.size) actionBar.classList.remove('translate-y-full');
             
-            let text = `${currentSelection.size || '?'} + ${currentSelection.batter || '?'} + `;
-            text += currentSelection.fillings.length === 0 ? "?" : currentSelection.fillings.join(' & ');
-            summary.textContent = text;
+            let textItems = [];
+            if (currentSelection.size) textItems.push(`Bolo ${currentSelection.size}`);
+            if (currentSelection.batter) textItems.push(`Massa ${currentSelection.batter}`);
+            if (currentSelection.fillings.length > 0) textItems.push(currentSelection.fillings.join(' + '));
+            
+            summary.innerHTML = textItems.length > 0 
+                ? textItems.join(' <span class="text-dolice-accent mx-1">•</span> ') 
+                : 'Monte seu bolo acima';
+
+            const isComplete = currentSelection.size && currentSelection.batter && currentSelection.fillings.length > 0;
+            
+            if (isComplete) {
+                actionBar.classList.add('visible-bar');
+                actionBar.querySelector('button').classList.add('btn-breathe');
+            } else {
+                actionBar.classList.remove('visible-bar');
+                actionBar.querySelector('button').classList.remove('btn-breathe');
+            }
         }
 
+        // Carrinho
         function addToCart() {
-            if (!currentSelection.size || !currentSelection.batter || currentSelection.fillings.length === 0) {
-                alert("Complete sua seleção primeiro.");
-                return;
-            }
+            if (!currentSelection.size || !currentSelection.batter || currentSelection.fillings.length === 0) return;
             cart.push({ ...currentSelection, id: Date.now() });
             resetSelection();
             updateCartUI();
-            toggleCart();
+            showToast();
+            setTimeout(() => { toggleCart(); }, 700);
         }
 
         function resetSelection() {
             currentSelection = { size: null, sizeDetails: null, batter: null, fillings: [] };
             document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-            document.getElementById('action-bar').classList.add('translate-y-full');
+            checkSelectionComplete();
+            lenis.scrollTo('#tamanhos', { offset: -100, duration: 1.8 });
         }
 
         function updateCartUI() {
             const container = document.getElementById('cart-items');
-            const badge = document.getElementById('cart-count-badge');
-            const badgeMob = document.getElementById('cart-count-badge-mobile');
+            const badges = [document.getElementById('cart-count-badge'), document.getElementById('cart-count-badge-mobile')];
             
-            badge.textContent = cart.length;
-            badgeMob.textContent = cart.length;
-            badge.classList.toggle('hidden', cart.length === 0);
-            badgeMob.classList.toggle('hidden', cart.length === 0);
+            badges.forEach(badge => {
+                badge.textContent = cart.length;
+                if(cart.length > 0) {
+                    badge.classList.remove('hidden');
+                    badge.classList.remove('badge-pop');
+                    void badge.offsetWidth; 
+                    badge.classList.add('badge-pop');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
 
             if (cart.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-400 mt-10">Carrinho vazio</div>';
+                container.innerHTML = `
+                    <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-gray-400 opacity-50">
+                        <i data-lucide="shopping-bag" class="w-16 h-16 mb-4 stroke-1"></i>
+                        <p class="font-serif text-xl">Seu carrinho está vazio</p>
+                        <button onclick="toggleCart()" class="mt-4 text-sm text-dolice-accent underline hover:text-dolice-dark">Voltar para o cardápio</button>
+                    </div>`;
+                lucide.createIcons();
                 return;
             }
 
             container.innerHTML = '';
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = 'bg-white p-4 rounded-lg shadow-sm relative';
+                div.className = 'bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex gap-4 items-center group';
+                div.style.opacity = '0';
+                div.style.transform = 'translateX(20px)';
+                
                 div.innerHTML = `
-                    <button onclick="removeFromCart(${item.id})" class="absolute top-2 right-2 text-gray-300"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    <p class="font-bold text-dolice-dark">Bolo de ${item.size}</p>
-                    <p class="text-xs text-gray-500">${item.batter} / ${item.fillings.join(', ')}</p>
+                    <div class="w-12 h-12 rounded-xl bg-dolice-rose/50 flex flex-shrink-0 items-center justify-center text-dolice-accent">
+                        <i data-lucide="cake-slice" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-serif text-xl text-dolice-dark leading-none mb-1">Bolo ${item.size}</p>
+                        <p class="text-xs text-gray-500 truncate">${item.batter} • ${item.fillings.join(', ')}</p>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-100 hover:text-red-600 focus:opacity-100">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
                 `;
                 container.appendChild(div);
+                
+                gsap.to(div, { 
+                    opacity: 1, x: 0, 
+                    duration: 0.6, 
+                    delay: index * 0.1, 
+                    ease: 'power3.out' 
+                });
             });
             lucide.createIcons();
         }
 
         function removeFromCart(id) {
-            cart = cart.filter(i => i.id !== id);
+            cart = cart.filter(item => item.id !== id);
             updateCartUI();
         }
 
         function toggleCart() {
             const sidebar = document.getElementById('cart-sidebar');
-            sidebar.classList.toggle('closed');
-            sidebar.classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('hidden');
+            const overlay = document.getElementById('overlay');
+            const isClosed = sidebar.classList.contains('closed');
+
+            if (isClosed) {
+                sidebar.classList.remove('closed');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                lenis.stop(); 
+            } else {
+                sidebar.classList.add('closed');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 500); 
+                lenis.start(); 
+            }
         }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.ripple-effect').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
 
         function sendToWhatsApp() {
-            if (cart.length === 0) return alert("Carrinho vazio!");
-            const name = document.getElementById('customer-name').value.trim();
-            if (!name) return alert("Diga-nos o seu nome.");
+            if (cart.length === 0) return;
+            
+            const nameInput = document.getElementById('customer-name');
+            const name = nameInput.value.trim();
+            
+            if (!name) {
+                gsap.fromTo(nameInput, { x: -8 }, { x: 0, duration: 0.3, ease: "elastic.out(2, 0.5)", clearProps: "x" });
+                nameInput.focus();
+                return;
+            }
 
-            let msg = `👋 Olá sou *${name}*, e gostaria de realizar um orçamento!\n\n`;
+            const duration = 2000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                const particleCount = 50 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, colors: ['#D49A9A', '#4A3B37', '#ffffff'] }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, colors: ['#D49A9A', '#4A3B37', '#ffffff'] }));
+            }, 250);
+
+            let msg = `👋 Olá, sou *${name}*! Gostaria de realizar um orçamento artesanal:\n\n`;
             cart.forEach((item, i) => {
-                msg += `*🗒 Descrição do pedido:*\n- Tamanho: ${item.size}\n- Massa: ${item.batter}\n- Recheio: ${item.fillings.join(' + ')}`});
+                msg += `🍰 *Pedido ${i+1}:*\n`;
+                msg += `↳ Tamanho: ${item.size} (${item.sizeDetails})\n`;
+                msg += `↳ Massa: ${item.batter}\n`;
+                msg += `↳ Recheios: ${item.fillings.join(' + ')}\n\n`;
+            });
+            msg += `Aguardando retorno para confirmar valor e retirada! ✨`;
             
             const phone = "558391448536";
-            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+            
+            setTimeout(() => {
+                window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`, '_blank');
+            }, 1000);
         }
 
-        lucide.createIcons();
-        AOS.init();
+        checkSelectionComplete();
     </script>
 </body>
 </html>
-
